@@ -26,9 +26,9 @@ function App() {
   async function fetchData(opts) {
     const { days, base, symbol } = opts;
     setOptions({
-      days: days ? days : options?.days,
-      base: base ? base : options?.base,
-      symbol: symbol ? symbol : options?.symbol,
+      days: days ? days : options.days,
+      base: base ? base : options.base,
+      symbol: symbol ? symbol : options.symbol,
     });
 
     const baseURL = "https://api.exchangerate.host";
@@ -120,8 +120,8 @@ function App() {
 
   // console.log("chartData", chartData);
 
-  const labels = chartData?.labels ? chartData?.labels : [];
-  const data = chartData.datasets[0]?.data ? chartData.datasets[0]?.data : [];
+  const labels = chartData.labels ? chartData.labels : [];
+  const data = chartData.datasets.length !== 0 ? chartData.datasets[0].data : [];
 
   return (
     <>
@@ -130,8 +130,8 @@ function App() {
         <Statistics
           labels={labels}
           data={data}
-          base={options?.base}
-          symbol={options?.symbol}
+          base={options.base}
+          symbol={options.symbol}
         />
 
         <div className="baseOptions">
@@ -147,14 +147,13 @@ function App() {
             <button
               key={baseOpt}
               style={{ minWidth: "80px" }}
-              className={`btn btn-${
-                baseOpt === options?.base ? "primary" : "outline-dark"
-              } btn-sm`}
+              className={`btn btn-${baseOpt === options.base ? "primary" : "outline-dark"
+                } btn-sm`}
               onClick={() =>
                 fetchData({
-                  days: options?.days,
+                  days: options.days,
                   base: baseOpt,
-                  symbol: options?.symbol,
+                  symbol: options.symbol,
                 })
               }
             >
@@ -176,13 +175,12 @@ function App() {
             <button
               key={symbolOpt}
               style={{ minWidth: "80px" }}
-              className={`btn btn-${
-                symbolOpt === options?.symbol ? "primary" : "outline-dark"
-              } btn-sm`}
+              className={`btn btn-${symbolOpt === options.symbol ? "primary" : "outline-dark"
+                } btn-sm`}
               onClick={() =>
                 fetchData({
-                  days: options?.days,
-                  base: options?.base,
+                  days: options.days,
+                  base: options.base,
                   symbol: symbolOpt,
                 })
               }
@@ -205,14 +203,13 @@ function App() {
             <button
               key={dayOpt}
               style={{ minWidth: "80px" }}
-              className={`btn btn-${
-                dayOpt === options?.days ? "primary" : "outline-dark"
-              } btn-sm`}
+              className={`btn btn-${dayOpt === options.days ? "primary" : "outline-dark"
+                } btn-sm`}
               onClick={() =>
                 fetchData({
                   days: dayOpt,
-                  base: options?.base,
-                  symbol: options?.symbol,
+                  base: options.base,
+                  symbol: options.symbol,
                 })
               }
             >
