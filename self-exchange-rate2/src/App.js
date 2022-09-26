@@ -11,32 +11,29 @@ import Statistics from "./components/Statistics";
 function App() {
   const dayOptions = [7, 30, 60, 90, 180, 360];
   const baseOptions = ["HKD", "USD", "GBP", "EUR", "JPY", "CNY"];
-  const symbolOptions = ["HKD", "USD", "GBP", "EUR", "JPY", "CNY"]
-  // const [selected, setSelected] = React.useState(7);
+  const symbolOptions = ["HKD", "USD", "GBP", "EUR", "JPY", "CNY"];
 
-  // const [labels, setLabels] = React.useState([]);
-  // const [data, setData] = React.useState([]);
-  // const [rates, setRates] = React.useState({});
-  const [days, setDays] = React.useState(30);
-  const [base, setBase] = React.useState("GBP");
-  const [symbol, setSymbol] = React.useState("HKD");
+  const [options, setOptions] = React.useState({
+    days: 30,
+    base: "GBP",
+    symbol: "HKD",
+  });
 
   const [chartData, setChartData] = React.useState({
     datasets: [],
   });
   const [chartOptions, setChartOptions] = React.useState({});
+  async function fetchData(opts) {
+    const { days, base, symbol } = opts;
+    setOptions({
+      days: days ? days : options?.days,
+      base: base ? base : options?.base,
+      symbol: symbol ? symbol : options?.symbol,
+    });
 
-  // let base = "GBP";
-  // let symbol = "HKD";
-  
-  
-  
-  async function fetchData({days}) {
-    // const dateTo = new Date();
     const baseURL = "https://api.exchangerate.host";
 
     const params = {
-      // start_date: new Date(new Date().getTime() - (days - 1) * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
       start_date: new Date(new Date().setDate(new Date().getDate() - days + 1))
         .toISOString()
         .substring(0, 10),
@@ -44,27 +41,23 @@ function App() {
       base: base,
       symbols: symbol,
     };
-    setDays(days);
-    console.log("days", days);
-        const queryString = new URLSearchParams(params).toString();
+
+    const queryString = new URLSearchParams(params).toString();
     // console.log("queryString", queryString);
 
     const uri = baseURL + "/timeseries?" + queryString;
-    // console.log("uri", uri);
 
     try {
       let response = await fetch(uri);
       let jsons = await response.json();
-      const rates = jsons["rates"];
-      // setRates(rates);
-      // const s = Object.values(jsons.rates).map((val) => (val)[symbol])
+      // const rates = jsons["rates"];
 
       const chartData = {
         labels: Object.keys(jsons["rates"]),
         datasets: [
           {
             label: symbol,
-            data: Object.values(jsons.rates).map((val) => (val)[symbol]),
+            data: Object.values(jsons.rates).map((val) => val[symbol]),
             borderColor: "rgb(53, 162, 235)",
             backgroundColor: "rgba(53, 162, 253, 0.4)",
           },
@@ -122,30 +115,48 @@ function App() {
   }
 
   React.useEffect(() => {
-    fetchData(days);
+    fetchData(options);
   }, []);
 
-  console.log("chartData", chartData?.labels, chartData.datasets[0]?.data)
-  // const labelArr = chartData.labels;
-  // const dataArr = chartData.datasets[0]?.data;
-  const labels = (chartData?.labels) ? (chartData?.labels) : [];
-  const data = (chartData.datasets[0]?.data) ? chartData.datasets[0]?.data : [];
+  // console.log("chartData", chartData);
+
+  const labels = chartData?.labels ? chartData?.labels : [];
+  const data = chartData.datasets[0]?.data ? chartData.datasets[0]?.data : [];
 
   return (
     <>
       <div className="App">
         <Line data={chartData} options={chartOptions} width={100} height={50} />
-        <Statistics labels={labels} data={data} base={base} symbol={symbol} />
+        <Statistics
+          labels={labels}
+          data={data}
+          base={options?.base}
+          symbol={options?.symbol}
+        />
 
         <div className="baseOptions">
+          <button
+            type="button"
+            class="btn btn-dark btn-sm"
+            style={{ minWidth: "80px" }}
+            disabled
+          >
+            BASE
+          </button>
           {baseOptions.map((baseOpt) => (
             <button
               key={baseOpt}
               style={{ minWidth: "80px" }}
               className={`btn btn-${
-                baseOpt === base ? "primary" : "secondary"
+                baseOpt === options?.base ? "primary" : "outline-dark"
               } btn-sm`}
-              
+              onClick={() =>
+                fetchData({
+                  days: options?.days,
+                  base: baseOpt,
+                  symbol: options?.symbol,
+                })
+              }
             >
               {baseOpt}
             </button>
@@ -153,14 +164,28 @@ function App() {
         </div>
 
         <div className="symbolOptions">
+          <button
+            type="button"
+            class="btn btn-dark btn-sm"
+            style={{ minWidth: "80px" }}
+            disabled
+          >
+            SYMBOL
+          </button>
           {symbolOptions.map((symbolOpt) => (
             <button
               key={symbolOpt}
               style={{ minWidth: "80px" }}
               className={`btn btn-${
-                symbolOpt === symbol ? "primary" : "secondary"
+                symbolOpt === options?.symbol ? "primary" : "outline-dark"
               } btn-sm`}
-              onClick={() => fetchData(symbolOpt)}
+              onClick={() =>
+                fetchData({
+                  days: options?.days,
+                  base: options?.base,
+                  symbol: symbolOpt,
+                })
+              }
             >
               {symbolOpt}
             </button>
@@ -168,21 +193,33 @@ function App() {
         </div>
 
         <div className="dayOptions">
+          <button
+            type="button"
+            class="btn btn-dark btn-sm"
+            style={{ minWidth: "80px" }}
+            disabled
+          >
+            DAYS
+          </button>
           {dayOptions.map((dayOpt) => (
             <button
               key={dayOpt}
               style={{ minWidth: "80px" }}
               className={`btn btn-${
-                dayOpt === days ? "primary" : "secondary"
+                dayOpt === options?.days ? "primary" : "outline-dark"
               } btn-sm`}
-              onClick={() => fetchData(dayOpt)}
+              onClick={() =>
+                fetchData({
+                  days: dayOpt,
+                  base: options?.base,
+                  symbol: options?.symbol,
+                })
+              }
             >
               {dayOpt}
             </button>
           ))}
         </div>
-
- 
       </div>
     </>
   );
