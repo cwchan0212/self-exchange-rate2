@@ -5,6 +5,8 @@ Exchange rates API of [exchangerate.host](https://exchangerate.host/) is a simpl
 ### Demostration
 https://bit.ly/3gCEnXH
 
+---
+
 ### Folder Structure
 
 ```sh
